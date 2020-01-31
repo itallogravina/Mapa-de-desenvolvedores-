@@ -1,6 +1,6 @@
 const { Router } = require('express');
-const axios = require('axios');
-const Dev = require('./models/Dev');
+const DevController = require ('./controllers/DevControllers');
+const SearchController= require('./controllers/SearchController');
 const routes = Router();
 // metodos http: get, post, put, delete
 //Tipos de parametros:
@@ -9,28 +9,9 @@ const routes = Router();
 //ROute Params: request.params(idenfica um recurso para se modificado ou excluido ) 
 //Body: reques.body (dados para criação ou para alterar do registro)
 
+routes.get('/devs', DevController.index);
+routes.post('/devs', DevController.store );
 
-routes.post('/devs', async (request,response) => {
- const { github_username, techs,latitude,longetude} = request.body;
-
- const apiResponse = await axios.get(`https://api.github.com/users/${github_username}`);
- 
- const { name = login, avatar_url, bio }= apiResponse.data;
- 
- const techsArray = techs.split(',').map(tech => tech.trim()); 
- const location = {
-  type: 'Point',
-  coordinates: [longetude,latitude],
- };
- const dev = await Dev.create({
-  github_username,
-  name,
-  avatar_url,
-  bio,
-  techs: techsArray,
-  location,
- })
-return response.json(dev);
-});
+routes.get ('/search',SearchController.index);
 
 module.exports = routes;
